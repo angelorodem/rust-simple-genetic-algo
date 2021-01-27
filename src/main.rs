@@ -14,7 +14,7 @@ static GENERATIONS: i32 = 500;
 
 static TARGET: i32 = 16320;
 
-
+// Gaussian noise
 fn noise() -> i32 {
     let normal = Normal::new(0.0, MUTATION_COEF).unwrap();
     normal.sample(&mut rand::thread_rng()).floor() as i32
@@ -77,6 +77,7 @@ fn agent_score(agent: &mut Agent){  // FitScore
 
     agent.score = i32::abs(TARGET - sum);
 }
+
 
 fn initial_population() -> Vec<Agent> {
     let mut population : Vec<Agent> = Vec::new();
