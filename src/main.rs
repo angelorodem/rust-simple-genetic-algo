@@ -10,9 +10,11 @@ static AGENTS: i32 = RELATIONS*OFFSPRINGS*2;
 static PARAMETERS: i32 = 64;
 static MUTATION_COEF: f32 = 5.0;
 static MUTATION_PROB: f32 = 0.10;
-static GENERATIONS: i32 = 500;
+static GENERATIONS: i32 = 3000;
 
-static TARGET: i32 = 16320;
+static TARGET: i32 = 25000;
+
+static RAPE_ROUNDS: i32 = 5;
 
 // Gaussian noise
 fn noise() -> i32 {
@@ -104,6 +106,7 @@ fn initial_population() -> Vec<Agent> {
 fn main() {
     let mut population: Vec<Agent> =  initial_population(); 
     let mut next_population: Vec<Agent> = Vec::new();
+    let mut rng = rand::thread_rng();
 
     let mut needed_gens = 0;
     for gen in 0..GENERATIONS {
@@ -138,7 +141,26 @@ fn main() {
 
                 next_population.append(&mut offsprings);
             }     
-        }        
+        }    
+        
+        // Adding rape in some cases increse the pace of evolution by 5% to 10%, but makes each epoch slower
+        let r_max = population.len() - 1;
+        for i in 0..RAPE_ROUNDS {
+            let agent_a = rng.gen_range(0..r_max);
+            let agent_b = rng.gen_range(0..r_max);
+
+            if agent_a != agent_b {
+                let mut offsprings = cross_over(&population[agent_a], &population[agent_b]);
+                for offspring in 0..offsprings.len() {
+                    mutate_offspring(&mut offsprings[offspring]);
+                }
+
+                next_population.append(&mut offsprings);
+            }
+
+
+        }
+
 
         std::mem::swap(&mut population, &mut next_population);
         next_population.clear();
